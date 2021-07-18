@@ -8,9 +8,10 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
 $mysqli->query("DROP TABLE IF EXISTS video");
 $mysqli->query("CREATE TABLE video(
     id VARCHAR(15) PRIMARY KEY,
-    title VARCHAR(255)
+    title VARCHAR(255),
+    ext VARCHAR(7)
     ) COLLATE=utf8mb4_0900_bin");
-$stmt = $mysqli->prepare("INSERT INTO video(id, title) VALUES (?, ?)");
+$stmt = $mysqli->prepare("INSERT INTO video(id, title, ext) VALUES (?, ?, ?)");
 
 $files = scandir(VIDEO_DIR);
 foreach ($files as $file) {
@@ -18,7 +19,12 @@ foreach ($files as $file) {
         $json = file_get_contents(VIDEO_DIR . "/$file");
         $data = json_decode($json, true);
 
-        $stmt->bind_param("ss", $data["id"], $data["title"]);
+        $stmt->bind_param(
+            "sss",
+            $data["id"],
+            $data["title"],
+            $data["ext"]
+        );
         $stmt->execute();
     }
 }

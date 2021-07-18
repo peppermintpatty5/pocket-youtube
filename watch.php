@@ -3,7 +3,7 @@ require_once "mysql.php";
 
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
-$stmt = $mysqli->prepare("SELECT id, title FROM video WHERE id=?");
+$stmt = $mysqli->prepare("SELECT id, title, ext FROM video WHERE id=?");
 $stmt->bind_param("s", $_GET["v"]);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -14,7 +14,7 @@ if ($result === false || !($row = $result->fetch_assoc())) {
     die();
 }
 
-$video_url = "/videos/{$row['id']}.mp4";
+$video_url = "/videos/{$row['id']}.{$row['ext']}";
 ?>
 <!DOCTYPE html>
 <html lang="en">
