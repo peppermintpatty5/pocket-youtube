@@ -8,7 +8,8 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
 $mysqli->query("DROP TABLE IF EXISTS video");
 $mysqli->query("CREATE TABLE video(
     id VARCHAR(15) PRIMARY KEY,
-    title VARCHAR(255))");
+    title VARCHAR(255)
+    ) COLLATE=utf8mb4_0900_bin");
 $stmt = $mysqli->prepare("INSERT INTO video(id, title) VALUES (?, ?)");
 
 $files = scandir(VIDEO_DIR);
