@@ -3,7 +3,11 @@ require_once "mysql.php";
 
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
-$stmt = $mysqli->prepare("SELECT id, title, ext FROM video WHERE id=?");
+$stmt = $mysqli->prepare(
+    "SELECT id, title, description, ext
+    FROM video
+    WHERE id=?"
+);
 $stmt->bind_param("s", $_GET["v"]);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -26,7 +30,10 @@ $video_url = "/videos/{$row['id']}.{$row['ext']}";
 
 <body>
     <h1><?php echo $row["title"]; ?></h1>
-    <video controls src="<?php echo $video_url; ?>"></video>
+    <video controls src="<?php echo $video_url; ?>">
+        <em>Your browser does not support embedded videos</em>
+    </video>
+    <pre><?php echo $row["description"]; ?></pre>
 </body>
 
 </html>
