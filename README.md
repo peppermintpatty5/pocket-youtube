@@ -2,11 +2,20 @@
 
 Simple webpage for hosting video library via HTTP
 
-## HTTP Server Configuration
+## Prerequisites
 
-I use LAMP (Linux + Apache + MySQL + PHP) because it gets the job done. Even though PHP is awful, it beats dealing with Node.js and npm. Make sure you have LAMP installed if you want to try out this project. In principle, this should also work with HTTP servers besides Apache. You could also use a non-Linux operating system, but why would you ever do that? :penguin:
+You will need the following tools, commonly referred to as LAMP.
 
-The first step is to host your video library on Apache. Moving your entire video library into `/var/www/html` would be inconvenient and unnecessary. Apache can be configured to permit access to specific directories outside the document root. Add the following to `/etc/apache2/apache2.conf`.
+- Linux
+- Apache
+- MySQL
+- PHP :vomiting_face:
+
+> "This is the weapon of a web engineer. Not as clumsy or as random as Node.js. An elegant stack for a more civilized age." - *Ben Kenobi*
+
+## Apache Configuration
+
+The first step is to host your video library on Apache, which can be configured to permit access to specific directories outside the document root. Add the following to `/etc/apache2/apache2.conf`.
 
 ```apache
 Alias "/videos" "/path/to/video/library"
@@ -16,7 +25,7 @@ Alias "/videos" "/path/to/video/library"
 </Directory>
 ```
 
-Restart Apache for your changes to take effect. Your video library should then be visible at [http://localhost/videos/](http://localhost/videos/).
+Restart Apache for your changes to take effect. Your videos should then be visible at [http://localhost/videos/](http://localhost/videos/).
 
 ```sh
 service apache2 restart
