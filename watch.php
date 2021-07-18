@@ -1,16 +1,31 @@
 <?php
-$video_url = "/videos/{$_GET['v']}.mp4";
-?>
+require_once "mysql.php";
 
+$mysqli = new mysqli($hostname, $username, $password, $database);
+
+$stmt = $mysqli->prepare("SELECT id, title FROM video WHERE id=?");
+$stmt->bind_param("s", $_GET["v"]);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result === false || !($row = $result->fetch_assoc())) {
+    http_response_code(404);
+    echo "Video not found";
+    die();
+}
+
+$video_url = "/videos/{$row['id']}.mp4";
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title>Document</title>
+    <title><?php echo $row["title"]; ?></title>
 </head>
 
 <body>
+    <h1><?php echo $row["title"]; ?></h1>
     <video controls src="<?php echo $video_url; ?>"></video>
 </body>
 
