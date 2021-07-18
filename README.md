@@ -9,7 +9,7 @@ You will need the following tools, commonly referred to as LAMP.
 - Linux
 - Apache
 - MySQL
-- PHP :vomiting_face:
+- PHP :persevere:
 
 > "This is the weapon of a web engineer. Not as clumsy or as random as Node.js. An elegant stack for a more civilized age." - *Ben Kenobi*
 
@@ -65,7 +65,7 @@ Now comes the task of storing the metadata for all videos in a database. First, 
 CREATE DATABASE pocket_youtube;
 ```
 
-Next, create a symbolic link to your video library. Please note that for security reasons, Apache disables following symbolic links by default, which means that [http://localhost/youtube/videos/](http://localhost/youtube/videos/) should **not** be accessible.
+Next, create a symbolic link named `videos` to your video library. Please note that for security reasons, Apache disables following symbolic links by default, which means that [http://localhost/youtube/videos/](http://localhost/youtube/videos/) should **not** be accessible.
 
 ```sh
 ln --symbolic /path/to/video/library videos
