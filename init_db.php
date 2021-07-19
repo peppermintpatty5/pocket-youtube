@@ -7,32 +7,32 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
 $mysqli->query("DROP TABLE IF EXISTS channel, video");
 $mysqli->query(
     "CREATE TABLE channel(
-        id varchar(24) PRIMARY KEY,
+        channel_id varchar(24) PRIMARY KEY,
         uploader varchar(255)
     ) COLLATE=utf8mb4_0900_bin"
 );
 $mysqli->query(
     "CREATE TABLE video(
-        id varchar(15) PRIMARY KEY,
+        video_id varchar(15) PRIMARY KEY,
         title varchar(255),
         description text,
         channel_id varchar(24),
         ext varchar(7),
-        FOREIGN KEY (channel_id) REFERENCES channel(id)
+        FOREIGN KEY (channel_id) REFERENCES channel(channel_id)
     ) COLLATE=utf8mb4_0900_bin"
 );
 
 // prepared INSERT statements
 $channel_insert = $mysqli->prepare(
     "INSERT INTO channel(
-        id, uploader
+        channel_id, uploader
     ) VALUES(
         ?, ?
     )"
 );
 $video_insert = $mysqli->prepare(
     "INSERT INTO video(
-        id, title, description, channel_id, ext
+        video_id, title, description, channel_id, ext
     ) VALUES(
         ?, ?, ?, ?, ?
     )"

@@ -4,9 +4,9 @@ require_once "mysql.php";
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
 $stmt = $mysqli->prepare(
-    "SELECT id, title, description, ext
+    "SELECT video_id, title, description, ext
     FROM video
-    WHERE id=?"
+    WHERE video_id=?"
 );
 $stmt->bind_param("s", $_GET["v"]);
 $stmt->execute();
@@ -18,7 +18,7 @@ if ($result === false || !($row = $result->fetch_assoc())) {
     die();
 }
 
-$video_url = "/videos/{$row['id']}.{$row['ext']}";
+$video_url = "/videos/{$row['video_id']}.{$row['ext']}";
 ?>
 <!DOCTYPE html>
 <html lang="en">
