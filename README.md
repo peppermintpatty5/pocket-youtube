@@ -11,7 +11,9 @@ You will need the following tools, commonly referred to as LAMP.
 - MySQL
 - PHP :persevere:
 
-> "This is the weapon of a web engineer. Not as clumsy or as random as Node.js. An elegant stack for a more civilized age." - *Ben Kenobi*
+> "Your father's LAMP-saber. This is the weapon of a web engineer. Not as clumsy or random as Node.js. An elegant stack for a more civilized age."
+>
+> \- *Obi-Wan Kenobi*
 
 ### Apache Configuration
 
