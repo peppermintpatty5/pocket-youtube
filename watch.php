@@ -8,7 +8,7 @@ $stmt = $mysqli->prepare(
     FROM video
     WHERE video_id=?"
 );
-$stmt->bind_param("s", $_GET["v"]);
+$stmt->bind_param("s", $_GET["id"]);
 $stmt->execute();
 $result = $stmt->get_result();
 

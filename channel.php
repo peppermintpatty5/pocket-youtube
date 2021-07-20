@@ -44,7 +44,7 @@ $uploader = $row["uploader"];
 
         while ($row = $result->fetch_assoc()) {
             $thumb_url = "/videos/{$row['video_id']}.jpg";
-            $watch_url = "watch.php?v={$row['video_id']}";
+            $watch_url = "watch.php?id={$row['video_id']}";
         ?>
             <li>
                 <img width="240" height="150" src="<?php echo $thumb_url; ?>">
