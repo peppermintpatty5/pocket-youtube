@@ -11,7 +11,9 @@ You will need the following tools, commonly referred to as LAMP.
 - MySQL
 - PHP :persevere:
 
-> "This is the weapon of a web engineer. Not as clumsy or as random as Node.js. An elegant stack for a more civilized age." - *Ben Kenobi*
+> "Your father's LAMP-saber. This is the weapon of a web engineer. Not as clumsy or random as Node.js. An elegant stack for a more civilized age."
+>
+> \- *Obi-Wan Kenobi*
 
 ### Apache Configuration
 
@@ -82,6 +84,12 @@ $database = "pocket_youtube";
 ```
 
 Finally, navigate to [http://localhost/youtube/init_db.php](http://localhost/youtube/init_db.php) to initialize the database. Upon returning to the homepage, you should find it populated with your videos.
+
+You can now safely remove the symbolic link you created earlier, although there is nothing wrong with keeping it around for later use.
+
+```sh
+rm videos # optional
+```
 
 ## Remarks on `youtube-dl`
 

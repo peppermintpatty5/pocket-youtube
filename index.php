@@ -15,12 +15,17 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
     <h1>Pocket YouTube</h1>
     <ul>
         <?php
-        $result = $mysqli->query("SELECT id, title FROM video");
+        $result = $mysqli->query("SELECT channel_id, uploader FROM channel");
+
         while ($row = $result->fetch_assoc()) {
-            $href = "watch.php?v={$row['id']}";
-            echo "<li><a href='$href'>", $row["title"], "</a></li>";
-        }
+            $channel_url = "channel.php?id={$row['channel_id']}";
         ?>
+            <li>
+                <a href="<?php echo $channel_url; ?>">
+                    <?php echo $row["uploader"] ?>
+                </a>
+            </li>
+        <?php } ?>
     </ul>
 </body>
 
