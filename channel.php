@@ -12,14 +12,14 @@ $stmt->bind_param("s", $_GET["id"]);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result === false || !($row = $result->fetch_assoc())) {
+if ($result && $row = $result->fetch_assoc()) {
+    $channel_id = $row["channel_id"];
+    $uploader = $row["uploader"];
+} else {
     http_response_code(404);
     echo "Channel not found";
     die();
 }
-
-$channel_id = $row["channel_id"];
-$uploader = $row["uploader"];
 ?>
 <!DOCTYPE html>
 <html lang="en">

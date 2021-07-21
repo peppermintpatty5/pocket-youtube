@@ -12,28 +12,33 @@ $stmt->bind_param("s", $_GET["id"]);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result === false || !($row = $result->fetch_assoc())) {
+if ($result && $row = $result->fetch_assoc()) {
+    $video_id = $row["video_id"];
+    $title = $row["title"];
+    $description = $row["description"];
+    $ext = $row["ext"];
+} else {
     http_response_code(404);
     echo "Video not found";
     die();
 }
 
-$video_url = "/videos/{$row['video_id']}.{$row['ext']}";
+$video_url = "/videos/{$video_id}.{$ext}";
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $row["title"]; ?></title>
+    <title><?php echo $title; ?></title>
 </head>
 
 <body>
-    <h1><?php echo $row["title"]; ?></h1>
+    <h1><?php echo $title; ?></h1>
     <video controls src="<?php echo $video_url; ?>">
         <em>Your browser does not support embedded videos</em>
     </video>
-    <pre><?php echo $row["description"]; ?></pre>
+    <pre><?php echo $description; ?></pre>
 </body>
 
 </html>
