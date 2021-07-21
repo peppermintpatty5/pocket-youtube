@@ -34,17 +34,19 @@ if ($result && $row = $result->fetch_assoc()) {
     <ol>
         <?php
         $stmt = $mysqli->prepare(
-            "SELECT video_id, title
+            "SELECT video_id, title, upload_date
             FROM video
-            WHERE channel_id=?"
+            WHERE channel_id=?
+            ORDER BY upload_date DESC"
         );
         $stmt->bind_param("s", $channel_id);
         $stmt->execute();
         $result = $stmt->get_result();
 
         while ($row = $result->fetch_assoc()) {
-            $thumb_url = "/videos/{$row['video_id']}.jpg";
-            $watch_url = "watch.php?id={$row['video_id']}";
+            $video_id = $row["video_id"];
+            $thumb_url = "/videos/{$video_id}.jpg";
+            $watch_url = "watch.php?id={$video_id}";
         ?>
             <li>
                 <img width="240" height="150" src="<?php echo $thumb_url; ?>">

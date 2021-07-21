@@ -16,6 +16,7 @@ $mysqli->query(
         video_id varchar(15) PRIMARY KEY,
         title varchar(255),
         description text,
+        upload_date date,
         channel_id varchar(24),
         ext varchar(7),
         FOREIGN KEY (channel_id) REFERENCES channel(channel_id)
@@ -32,9 +33,9 @@ $channel_insert = $mysqli->prepare(
 );
 $video_insert = $mysqli->prepare(
     "INSERT INTO video(
-        video_id, title, description, channel_id, ext
+        video_id, title, description, upload_date, channel_id, ext
     ) VALUES(
-        ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?
     )"
 );
 
@@ -50,10 +51,11 @@ foreach ($files as $file) {
             $data["uploader"]
         );
         $video_insert->bind_param(
-            "sssss",
-            $data["id"],
+            "ssssss",
+            $data["id"], // video_id
             $data["title"],
             $data["description"],
+            $data["upload_date"],
             $data["channel_id"],
             $data["ext"]
         );
