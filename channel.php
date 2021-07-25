@@ -1,6 +1,14 @@
 <?php
 require_once "mysql.php";
 
+function duration_to_timestamp($duration)
+{
+    $seconds = $duration % 60;
+    $minutes = intdiv($duration, 60);
+
+    return sprintf("%d:%02d", $minutes, $seconds);
+}
+
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
 $stmt = $mysqli->prepare(
@@ -31,40 +39,63 @@ if ($result && $row = $result->fetch_assoc()) {
 
 <body>
     <h1><?php echo $uploader; ?></h1>
-    <ol>
-        <?php
-        $stmt = $mysqli->prepare(
-            "SELECT video_id, title, upload_date, thumbnail
-            FROM video
-            WHERE channel_id=?
-            ORDER BY upload_date DESC"
-        );
-        $stmt->bind_param("s", $channel_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Thumbnail</th>
+                <th>Duration</th>
+                <th>Title</th>
+                <th>View count</th>
+                <th>Upload date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $stmt = $mysqli->prepare(
+                "SELECT video_id, title, upload_date, duration, view_count, thumbnail
+                FROM video
+                WHERE channel_id=?
+                ORDER BY upload_date DESC"
+            );
+            $stmt->bind_param("s", $channel_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-        while ($row = $result->fetch_assoc()) {
-            $video_id = $row["video_id"];
-            $title = $row["title"];
-            $thumbnail = $row["thumbnail"];
+            for ($i = 1; $row = $result->fetch_assoc(); $i++) {
+                $video_id = $row["video_id"];
+                $title = $row["title"];
+                $upload_date = $row["upload_date"];
+                $duration = $row["duration"];
+                $view_count = $row["view_count"];
+                $thumbnail = $row["thumbnail"];
 
-            /**
-             * prefer the locally hosted thumbnail, obtain by extracting the
-             * extension (jpg, webp, etc.) from YouTube's URL using regex
-             */
-            if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
-                $thumb_ext = $matches[1];
-                $thumbnail = "/videos/{$video_id}.{$thumb_ext}";
-            }
+                /**
+                 * Prefer the locally hosted thumbnail, obtain by extracting the
+                 * extension (jpg, webp, etc.) from YouTube's URL using regex
+                 */
+                if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
+                    $thumb_ext = $matches[1];
+                    $thumbnail = "/videos/{$video_id}.{$thumb_ext}";
+                }
 
-            $watch_url = "watch.php?id={$video_id}";
-        ?>
-            <li>
-                <img width="240" height="150" src="<?php echo $thumbnail; ?>">
-                <a href="<?php echo $watch_url; ?>"><?php echo $title; ?></a>
-            </li>
-        <?php } ?>
-    </ol>
+                $watch_url = "watch.php?id={$video_id}";
+            ?>
+                <tr>
+                    <td><?php echo $i; ?></td>
+                    <td>
+                        <img width="240" height="150" src="<?php echo $thumbnail; ?>">
+                    </td>
+                    <td><?php echo duration_to_timestamp($duration); ?></td>
+                    <td>
+                        <a href="<?php echo $watch_url; ?>"><?php echo $title; ?></a>
+                    </td>
+                    <td><?php echo number_format($view_count); ?></td>
+                    <td><?php echo $upload_date; ?></td>
+                </tr>
+            <?php } ?>
+        </tbody>
+    </table>
 </body>
 
 </html>
