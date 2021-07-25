@@ -34,7 +34,7 @@ if ($result && $row = $result->fetch_assoc()) {
     <ol>
         <?php
         $stmt = $mysqli->prepare(
-            "SELECT video_id, title, upload_date
+            "SELECT video_id, title, upload_date, thumbnail
             FROM video
             WHERE channel_id=?
             ORDER BY upload_date DESC"
@@ -45,14 +45,23 @@ if ($result && $row = $result->fetch_assoc()) {
 
         while ($row = $result->fetch_assoc()) {
             $video_id = $row["video_id"];
-            $thumb_url = "/videos/{$video_id}.jpg";
+            $title = $row["title"];
+            $thumbnail = $row["thumbnail"];
+
+            /**
+             * prefer the locally hosted thumbnail, obtain by extracting the
+             * extension (jpg, webp, etc.) from YouTube's URL using regex
+             */
+            if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
+                $thumb_ext = $matches[1];
+                $thumbnail = "/videos/{$video_id}.{$thumb_ext}";
+            }
+
             $watch_url = "watch.php?id={$video_id}";
         ?>
             <li>
-                <img width="240" height="150" src="<?php echo $thumb_url; ?>">
-                <a href="<?php echo $watch_url; ?>">
-                    <?php echo $row["title"]; ?>
-                </a>
+                <img width="240" height="150" src="<?php echo $thumbnail; ?>">
+                <a href="<?php echo $watch_url; ?>"><?php echo $title; ?></a>
             </li>
         <?php } ?>
     </ol>
