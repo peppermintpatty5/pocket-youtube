@@ -62,36 +62,30 @@ if ($result && $row = $result->fetch_assoc()) {
             $stmt->execute();
             $result = $stmt->get_result();
 
-            for ($i = 1; $row = $result->fetch_assoc(); $i++) {
-                $video_id = $row["video_id"];
-                $title = $row["title"];
-                $upload_date = $row["upload_date"];
-                $duration = $row["duration"];
-                $view_count = $row["view_count"];
-                $thumbnail = $row["thumbnail"];
-
+            for ($i = 1; $video = $result->fetch_object(); $i++) {
                 /**
                  * Prefer the locally hosted thumbnail, obtain by extracting the
                  * extension (jpg, webp, etc.) from YouTube's URL using regex
                  */
+                $thumbnail = $video->thumbnail;
                 if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
                     $thumb_ext = $matches[1];
-                    $thumbnail = "/videos/{$video_id}.{$thumb_ext}";
+                    $thumbnail = "/videos/{$video->video_id}.{$thumb_ext}";
                 }
-
-                $watch_url = "watch.php?id={$video_id}";
             ?>
                 <tr>
                     <td><?php echo $i; ?></td>
                     <td>
                         <img width="240" height="150" src="<?php echo $thumbnail; ?>">
                     </td>
-                    <td><?php echo duration_to_timestamp($duration); ?></td>
+                    <td><?php echo duration_to_timestamp($video->duration); ?></td>
                     <td>
-                        <a href="<?php echo $watch_url; ?>"><?php echo $title; ?></a>
+                        <a href="watch.php?id=<?php echo $video->video_id; ?>">
+                            <?php echo $video->title; ?>
+                        </a>
                     </td>
-                    <td><?php echo number_format($view_count); ?></td>
-                    <td><?php echo $upload_date; ?></td>
+                    <td><?php echo number_format($video->view_count); ?></td>
+                    <td><?php echo $video->upload_date; ?></td>
                 </tr>
             <?php } ?>
         </tbody>
