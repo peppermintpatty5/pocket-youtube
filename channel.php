@@ -1,7 +1,11 @@
 <?php
 require_once "mysql.php";
 
-function duration_to_timestamp($duration)
+/**
+ * Given a duration in seconds as a non-negative integer, outputs a string in
+ * the format `mm:ss` or `h:mm:ss`.
+ */
+function format_duration(int $duration): string
 {
     $seconds = $duration % 60;
     $minutes = intdiv($duration, 60);
@@ -20,9 +24,9 @@ $stmt->bind_param("s", $_GET["id"]);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result && $row = $result->fetch_assoc()) {
-    $channel_id = $row["channel_id"];
-    $uploader = $row["uploader"];
+if ($result && $channel = $result->fetch_object()) {
+    $channel_id = $channel->channel_id;
+    $uploader = $channel->uploader;
 } else {
     http_response_code(404);
     echo "Channel not found";
@@ -34,7 +38,7 @@ if ($result && $row = $result->fetch_assoc()) {
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $row["uploader"]; ?></title>
+    <title><?php echo $uploader; ?></title>
 </head>
 
 <body>
@@ -78,14 +82,18 @@ if ($result && $row = $result->fetch_assoc()) {
                     <td>
                         <img width="240" height="150" src="<?php echo $thumbnail; ?>">
                     </td>
-                    <td><?php echo duration_to_timestamp($video->duration); ?></td>
+                    <td><?php echo format_duration($video->duration); ?></td>
                     <td>
                         <a href="watch.php?id=<?php echo $video->video_id; ?>">
                             <?php echo $video->title; ?>
                         </a>
                     </td>
                     <td><?php echo number_format($video->view_count); ?></td>
-                    <td><?php echo $video->upload_date; ?></td>
+                    <td><?php echo date_format(
+                            date_create($video->upload_date),
+                            "M j, Y"
+                        ); ?>
+                    </td>
                 </tr>
             <?php } ?>
         </tbody>
