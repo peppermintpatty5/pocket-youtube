@@ -7,10 +7,14 @@ require_once "mysql.php";
  */
 function format_duration(int $duration): string
 {
-    $seconds = $duration % 60;
-    $minutes = intdiv($duration, 60);
+    $s = $duration % 60;
+    $m = intdiv($duration, 60) % 60;
+    $h = intdiv($duration, 3600);
 
-    return sprintf("%d:%02d", $minutes, $seconds);
+    if ($h > 0)
+        return sprintf("%d:%02d:%02d", $h, $m, $s);
+    else
+        return sprintf("%d:%02d", $m, $s);
 }
 
 $mysqli = new mysqli($hostname, $username, $password, $database);
