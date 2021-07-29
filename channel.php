@@ -20,18 +20,18 @@ function format_duration(int $duration): string
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
 $stmt = $mysqli->prepare(
-    "SELECT channel_id, uploader
+    "SELECT
+        channel.channel_id AS id,
+        channel.uploader AS uploader
     FROM channel
-    WHERE channel_id=?"
+    WHERE
+        channel.channel_id=?"
 );
 $stmt->bind_param("s", $_GET["id"]);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result && $channel = $result->fetch_object()) {
-    $channel_id = $channel->channel_id;
-    $uploader = $channel->uploader;
-} else {
+if (!($result && $channel = $result->fetch_object())) {
     http_response_code(404);
     echo "Channel not found";
     die();
@@ -42,11 +42,11 @@ if ($result && $channel = $result->fetch_object()) {
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $uploader; ?></title>
+    <title><?php echo $channel->uploader; ?></title>
 </head>
 
 <body>
-    <h1><?php echo $uploader; ?></h1>
+    <h1><?php echo $channel->uploader; ?></h1>
     <table>
         <thead>
             <tr>
@@ -61,12 +61,19 @@ if ($result && $channel = $result->fetch_object()) {
         <tbody>
             <?php
             $stmt = $mysqli->prepare(
-                "SELECT video_id, title, upload_date, duration, view_count, thumbnail
+                "SELECT
+                    video.video_id AS id,
+                    video.title AS title,
+                    video.upload_date AS upload_date,
+                    video.duration AS duration,
+                    video.view_count AS view_count,
+                    video.thumbnail AS thumbnail
                 FROM video
-                WHERE channel_id=?
-                ORDER BY upload_date DESC"
+                WHERE
+                    video.channel_id=?
+                ORDER BY video.upload_date"
             );
-            $stmt->bind_param("s", $channel_id);
+            $stmt->bind_param("s", $channel->id);
             $stmt->execute();
             $result = $stmt->get_result();
 
@@ -78,7 +85,7 @@ if ($result && $channel = $result->fetch_object()) {
                 $thumbnail = $video->thumbnail;
                 if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
                     $thumb_ext = $matches[1];
-                    $thumbnail = "/videos/{$video->video_id}.{$thumb_ext}";
+                    $thumbnail = "/videos/{$video->id}.{$thumb_ext}";
                 }
             ?>
                 <tr>
@@ -88,7 +95,7 @@ if ($result && $channel = $result->fetch_object()) {
                     </td>
                     <td><?php echo format_duration($video->duration); ?></td>
                     <td>
-                        <a href="watch.php?id=<?php echo $video->video_id; ?>">
+                        <a href="watch.php?id=<?php echo $video->id; ?>">
                             <?php echo $video->title; ?>
                         </a>
                     </td>

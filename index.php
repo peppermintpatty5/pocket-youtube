@@ -22,8 +22,8 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
                 COUNT(video.video_id) AS video_count
             FROM channel
                 LEFT JOIN video ON channel.channel_id=video.channel_id
-            GROUP BY id
-            ORDER BY uploader"
+            GROUP BY channel.channel_id
+            ORDER BY channel.uploader"
         );
 
         while ($channel = $result->fetch_object()) {
