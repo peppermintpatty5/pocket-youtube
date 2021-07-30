@@ -43,6 +43,7 @@ if (!($result && $channel = $result->fetch_object())) {
 <head>
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($channel->uploader); ?></title>
+    <link rel="stylesheet" href="styles/channel.css">
 </head>
 
 <body>
@@ -88,18 +89,23 @@ if (!($result && $channel = $result->fetch_object())) {
                     $thumbnail = "/videos/{$video->id}.{$thumb_ext}";
                 }
             ?>
-                <tr>
+                <tr id="video-block">
                     <td><?php echo $i; ?></td>
                     <td>
                         <img width="240" height="150" src="<?php echo $thumbnail; ?>">
                     </td>
-                    <td><?php echo format_duration($video->duration); ?></td>
-                    <td>
+                    <td id="video-duration">
+                        <?php echo format_duration($video->duration); ?>
+                    </td>
+                    <td id="video-title">
                         <a href="watch.php?id=<?php echo $video->id; ?>">
                             <?php echo htmlspecialchars($video->title); ?></a>
                     </td>
-                    <td><?php echo number_format($video->view_count); ?></td>
-                    <td><?php echo date_format(
+                    <td id="view-count">
+                        <?php echo number_format($video->view_count); ?>
+                    </td>
+                    <td id="upload-date">
+                        <?php echo date_format(
                             date_create($video->upload_date),
                             "M j, Y"
                         ); ?>
