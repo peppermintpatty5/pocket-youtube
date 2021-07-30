@@ -7,19 +7,23 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
 $mysqli->query("DROP TABLE IF EXISTS channel, video");
 $mysqli->query(
     "CREATE TABLE channel(
-        channel_id varchar(24) PRIMARY KEY,
-        uploader varchar(255)
-    ) COLLATE=utf8mb4_0900_bin"
+        channel_id  char(24) PRIMARY KEY,
+        uploader    varchar(255)
+    ) CHARACTER SET ascii, COLLATE ascii_bin"
 );
 $mysqli->query(
     "CREATE TABLE video(
-        video_id varchar(15) PRIMARY KEY,
-        title varchar(255),
-        description text,
-        channel_id varchar(24),
-        ext varchar(7),
+        video_id    char(11) PRIMARY KEY,
+        title       varchar(100) CHARACTER SET utf8mb4,
+        description text CHARACTER SET utf8mb4,
+        upload_date date,
+        channel_id  char(24),
+        duration    int,
+        view_count  int,
+        thumbnail   varchar(255),
+        ext         char(4),
         FOREIGN KEY (channel_id) REFERENCES channel(channel_id)
-    ) COLLATE=utf8mb4_0900_bin"
+    ) CHARACTER SET ascii, COLLATE ascii_bin"
 );
 
 // prepared INSERT statements
@@ -32,9 +36,17 @@ $channel_insert = $mysqli->prepare(
 );
 $video_insert = $mysqli->prepare(
     "INSERT INTO video(
-        video_id, title, description, channel_id, ext
+        video_id,
+        title,
+        description,
+        upload_date,
+        channel_id,
+        duration,
+        view_count,
+        thumbnail,
+        ext
     ) VALUES(
-        ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?
     )"
 );
 
@@ -50,11 +62,15 @@ foreach ($files as $file) {
             $data["uploader"]
         );
         $video_insert->bind_param(
-            "sssss",
-            $data["id"],
+            "sssssssss",
+            $data["id"], // video_id
             $data["title"],
             $data["description"],
+            $data["upload_date"],
             $data["channel_id"],
+            $data["duration"],
+            $data["view_count"],
+            $data["thumbnail"],
             $data["ext"]
         );
 
