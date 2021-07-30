@@ -42,11 +42,11 @@ if (!($result && $channel = $result->fetch_object())) {
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $channel->uploader; ?></title>
+    <title><?php echo htmlspecialchars($channel->uploader); ?></title>
 </head>
 
 <body>
-    <h1><?php echo $channel->uploader; ?></h1>
+    <h1><?php echo htmlspecialchars($channel->uploader); ?></h1>
     <table>
         <thead>
             <tr>
@@ -96,8 +96,7 @@ if (!($result && $channel = $result->fetch_object())) {
                     <td><?php echo format_duration($video->duration); ?></td>
                     <td>
                         <a href="watch.php?id=<?php echo $video->id; ?>">
-                            <?php echo $video->title; ?>
-                        </a>
+                            <?php echo htmlspecialchars($video->title); ?></a>
                     </td>
                     <td><?php echo number_format($video->view_count); ?></td>
                     <td><?php echo date_format(
