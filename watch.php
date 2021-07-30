@@ -28,15 +28,15 @@ if (!($result && $video = $result->fetch_object())) {
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $video->title; ?></title>
+    <title><?php echo htmlspecialchars($video->title); ?></title>
 </head>
 
 <body>
-    <h1><?php echo $video->title; ?></h1>
+    <h1><?php echo htmlspecialchars($video->title); ?></h1>
     <video controls src="/videos/<?php echo "{$video->id}.{$video->ext}"; ?>">
         <em>Your browser does not support embedded videos</em>
     </video>
-    <pre><?php echo $video->description; ?></pre>
+    <pre><?php echo htmlspecialchars($video->description); ?></pre>
 </body>
 
 </html>

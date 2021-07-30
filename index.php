@@ -30,8 +30,7 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
         ?>
             <li>
                 <a href="channel.php?id=<?php echo $channel->id; ?>">
-                    <?php echo $channel->uploader ?>
-                </a>
+                    <?php echo htmlspecialchars($channel->uploader) ?></a>
                 <span><?php echo $channel->video_count; ?> videos</span>
             </li>
         <?php } ?>
