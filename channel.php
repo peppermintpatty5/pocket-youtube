@@ -48,72 +48,57 @@ if (!($result && $channel = $result->fetch_object())) {
 
 <body>
     <h1><?php echo htmlspecialchars($channel->uploader); ?></h1>
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Thumbnail</th>
-                <th>Duration</th>
-                <th>Title</th>
-                <th>View count</th>
-                <th>Upload date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php
-            $stmt = $mysqli->prepare(
-                "SELECT
-                    video.video_id AS id,
-                    video.title AS title,
-                    video.upload_date AS upload_date,
-                    video.duration AS duration,
-                    video.view_count AS view_count,
-                    video.thumbnail AS thumbnail
-                FROM video
-                WHERE
-                    video.channel_id=?
-                ORDER BY video.upload_date"
-            );
-            $stmt->bind_param("s", $channel->id);
-            $stmt->execute();
-            $result = $stmt->get_result();
+    <main>
+        <?php
+        $stmt = $mysqli->prepare(
+            "SELECT
+                video.video_id AS id,
+                video.title AS title,
+                video.upload_date AS upload_date,
+                video.duration AS duration,
+                video.view_count AS view_count,
+                video.thumbnail AS thumbnail
+            FROM video
+            WHERE
+                video.channel_id=?
+            ORDER BY video.upload_date"
+        );
+        $stmt->bind_param("s", $channel->id);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            for ($i = 1; $video = $result->fetch_object(); $i++) {
-                /**
-                 * Prefer the locally hosted thumbnail, obtain by extracting the
-                 * extension (jpg, webp, etc.) from YouTube's URL using regex
-                 */
-                $thumbnail = $video->thumbnail;
-                if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
-                    $thumb_ext = $matches[1];
-                    $thumbnail = "/videos/{$video->id}.{$thumb_ext}";
-                }
-            ?>
-                <tr id="video-block">
-                    <td><?php echo $i; ?></td>
-                    <td>
-                        <img width="240" height="150" src="<?php echo $thumbnail; ?>">
-                    </td>
-                    <td id="video-duration">
-                        <?php echo format_duration($video->duration); ?>
-                    </td>
-                    <td id="video-title">
+        while ($video = $result->fetch_object()) {
+            /**
+             * Prefer the locally hosted thumbnail, obtain by extracting the
+             * extension (jpg, webp, etc.) from YouTube's URL using regex
+             */
+            $thumbnail = $video->thumbnail;
+            if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
+                $thumb_ext = $matches[1];
+                $thumbnail = "/videos/{$video->id}.{$thumb_ext}";
+            } ?>
+            <figure class="video-block">
+                <div class="video-thumbnail">
+                    <img width="240" height="150" alt="" src="<?php echo $thumbnail; ?>">
+                    <span class="video-duration">
+                        <?php echo format_duration($video->duration); ?></span>
+                </div>
+                <figcaption>
+                    <p class="video-title">
                         <a href="watch.php?id=<?php echo $video->id; ?>">
                             <?php echo htmlspecialchars($video->title); ?></a>
-                    </td>
-                    <td id="view-count">
-                        <?php echo number_format($video->view_count); ?>
-                    </td>
-                    <td id="upload-date">
+                    </p>
+                    <span class="view-count">
+                        <?php echo number_format($video->view_count); ?> views &bull;</span>
+                    <span class="upload-date">
                         <?php echo date_format(
                             date_create($video->upload_date),
                             "M j, Y"
-                        ); ?>
-                    </td>
-                </tr>
-            <?php } ?>
-        </tbody>
-    </table>
+                        ); ?></span>
+                </figcaption>
+            </figure>
+        <?php } ?>
+    </main>
 </body>
 
 </html>
