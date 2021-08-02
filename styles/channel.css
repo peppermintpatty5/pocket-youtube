@@ -1,0 +1,58 @@
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.video-block {
+    margin: 0em 1em 2em 0em;
+    max-width: 240px;
+}
+
+.video-thumbnail {
+    position: relative;
+}
+
+.video-thumbnail > img {
+    display: block;
+}
+
+.video-title {
+    font-weight: bold;
+    max-height: 3.5em;
+    overflow: hidden;
+}
+
+.video-title > a:focus {
+    color: red;
+}
+
+.view-count,
+.upload-date {
+    color: gray;
+    display: inline;
+    font-size: smaller;
+}
+
+.video-duration {
+    background-color: black;
+    border-radius: 5px;
+    color: white;
+    display: block;
+    font-size: smaller;
+    font-weight: bold;
+    opacity: 75%;
+    padding: 0.25em;
+    position: absolute;
+    bottom: 0.25em;
+    right: 0.25em;
+    width: min-content;
+}

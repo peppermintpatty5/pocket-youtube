@@ -29,6 +29,7 @@ if (!($result && $video = $result->fetch_object())) {
 <head>
     <meta charset="UTF-8">
     <title><?php echo htmlspecialchars($video->title); ?></title>
+    <link rel="stylesheet" href="styles/watch.css">
 </head>
 
 <body>
@@ -36,7 +37,7 @@ if (!($result && $video = $result->fetch_object())) {
     <video controls src="/videos/<?php echo "{$video->id}.{$video->ext}"; ?>">
         <em>Your browser does not support embedded videos</em>
     </video>
-    <pre><?php echo htmlspecialchars($video->description); ?></pre>
+    <pre class="video-description"><?php echo htmlspecialchars($video->description); ?></pre>
 </body>
 
 </html>
