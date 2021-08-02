@@ -9,6 +9,7 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
 <head>
     <meta charset="UTF-8">
     <title>Pocket YouTube</title>
+    <link rel="stylesheet" href="styles/index.css">
 </head>
 
 <body>
@@ -29,7 +30,7 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
         while ($channel = $result->fetch_object()) {
         ?>
             <li>
-                <a href="channel.php?id=<?php echo $channel->id; ?>">
+                <a class="channel-link" href="channel.php?id=<?php echo $channel->id; ?>">
                     <?php echo htmlspecialchars($channel->uploader) ?></a>
                 <span><?php echo $channel->video_count; ?> videos</span>
             </li>
