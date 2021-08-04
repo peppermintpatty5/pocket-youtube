@@ -46,11 +46,15 @@ Alias "/youtube" "/path/to/this/repository"
 
 This project requires `videos/` to be in a specific format. All files must be named by their YouTube ID, which guarantees unique and simple filenames. Metadata and thumbnails for each video are also needed.
 
+Furthermore, `videos/` must be partitioned by channel. These subdirectories must be named using the 24-character YouTube channel ID. The user is encouraged, but not required, to create symbolic links to these directories for easier reference.
+
 ```txt
 videos/
-├── dQw4w9WgXcQ.info.json
-├── dQw4w9WgXcQ.mp4
-└── dQw4w9WgXcQ.webp
+├── TheAngryGrandpaShow -> UCPFVhmjjSkFhfstm2LghZIg/
+└── UCPFVhmjjSkFhfstm2LghZIg
+    ├── zVQ61CpWBRk.info.json
+    ├── zVQ61CpWBRk.mp4
+    └── zVQ61CpWBRk.webp
 ```
 
 The following `youtube-dl` options are directly responsible for creating the output as described. See [remarks on `youtube-dl`](#remarks-on-youtube-dl) for more details.
