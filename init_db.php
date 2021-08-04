@@ -50,35 +50,45 @@ $video_insert = $mysqli->prepare(
     )"
 );
 
-$files = scandir("videos");
-foreach ($files as $file) {
-    if (preg_match("/^.*\.info\.json$/", $file)) {
-        $json = file_get_contents("videos/{$file}");
-        $data = json_decode($json, true);
+foreach (scandir("videos") as $a) {
+    if (
+        is_dir("videos/$a") && !is_link("videos/$a")
+        && preg_match("/^[a-zA-Z0-9_\-]{24}$/", $a)
+    ) {
+        $channel_dir = "videos/$a";
 
-        $channel_insert->bind_param(
-            "ss",
-            $data["channel_id"],
-            $data["uploader"]
-        );
-        $video_insert->bind_param(
-            "sssssssss",
-            $data["id"], // video_id
-            $data["title"],
-            $data["description"],
-            $data["upload_date"],
-            $data["channel_id"],
-            $data["duration"],
-            $data["view_count"],
-            $data["thumbnail"],
-            $data["ext"]
-        );
+        foreach (scandir($channel_dir) as $b) {
+            $filename = "$channel_dir/$b";
 
-        /**
-         * Must insert into to channel before video to meet foreign key
-         * constraint on video.channel_id
-         */
-        $channel_insert->execute();
-        $video_insert->execute();
+            if (is_file($filename) && preg_match("/^.*\.info\.json$/", $b)) {
+                $json = file_get_contents($filename);
+                $video = json_decode($json);
+
+                $channel_insert->bind_param(
+                    "ss",
+                    $video->channel_id,
+                    $video->uploader
+                );
+                $video_insert->bind_param(
+                    "sssssssss",
+                    $video->id,
+                    $video->title,
+                    $video->description,
+                    $video->upload_date,
+                    $video->channel_id,
+                    $video->duration,
+                    $video->view_count,
+                    $video->thumbnail,
+                    $video->ext
+                );
+
+                /**
+                 * Must insert into to channel before video to meet foreign key
+                 * constraint on video.channel_id
+                 */
+                $channel_insert->execute();
+                $video_insert->execute();
+            }
+        }
     }
 }

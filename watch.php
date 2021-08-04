@@ -8,6 +8,7 @@ $stmt = $mysqli->prepare(
         video.video_id AS id,
         video.title AS title,
         video.description AS description,
+        video.channel_id AS channel_id,
         video.ext AS ext
     FROM video
     WHERE
@@ -34,7 +35,7 @@ if (!($result && $video = $result->fetch_object())) {
 
 <body>
     <h1><?php echo htmlspecialchars($video->title); ?></h1>
-    <video controls src="/videos/<?php echo "{$video->id}.{$video->ext}"; ?>">
+    <video controls src="/videos/<?php echo "$video->channel_id/$video->id.$video->ext"; ?>">
         <em>Your browser does not support embedded videos</em>
     </video>
     <pre class="video-description"><?php echo htmlspecialchars($video->description); ?></pre>
