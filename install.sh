@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $USER != root ]; then
+if [ $EUID -ne 0 ]; then
     echo "$0: must be root"
     exit 1
 fi
