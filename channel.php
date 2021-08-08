@@ -1,59 +1,105 @@
 <?php
 require_once "mysql.php";
 
+/**
+ * Given a duration in seconds as a non-negative integer, outputs a string in
+ * the format `mm:ss` or `h:mm:ss`.
+ */
+function format_duration(int $duration): string
+{
+    $s = $duration % 60;
+    $m = intdiv($duration, 60) % 60;
+    $h = intdiv($duration, 3600);
+
+    if ($h > 0)
+        return sprintf("%d:%02d:%02d", $h, $m, $s);
+    else
+        return sprintf("%d:%02d", $m, $s);
+}
+
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
 $stmt = $mysqli->prepare(
-    "SELECT channel_id, uploader
+    "SELECT
+        channel.channel_id AS id,
+        channel.uploader AS uploader
     FROM channel
-    WHERE channel_id=?"
+    WHERE
+        channel.channel_id=?"
 );
 $stmt->bind_param("s", $_GET["id"]);
 $stmt->execute();
 $result = $stmt->get_result();
 
-if ($result === false || !($row = $result->fetch_assoc())) {
+if (!($result && $channel = $result->fetch_object())) {
     http_response_code(404);
     echo "Channel not found";
     die();
 }
-
-$channel_id = $row["channel_id"];
-$uploader = $row["uploader"];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo $row["uploader"]; ?></title>
+    <title><?php echo htmlspecialchars($channel->uploader); ?></title>
+    <link rel="stylesheet" href="styles/channel.css">
 </head>
 
 <body>
-    <h1><?php echo $uploader; ?></h1>
-    <ol>
+    <h1><?php echo htmlspecialchars($channel->uploader); ?></h1>
+    <main>
         <?php
         $stmt = $mysqli->prepare(
-            "SELECT video_id, title
+            "SELECT
+                video.video_id AS id,
+                video.title AS title,
+                video.upload_date AS upload_date,
+                video.channel_id AS channel_id,
+                video.duration AS duration,
+                video.view_count AS view_count,
+                video.thumbnail AS thumbnail
             FROM video
-            WHERE channel_id=?"
+            WHERE
+                video.channel_id=?
+            ORDER BY video.upload_date"
         );
-        $stmt->bind_param("s", $channel_id);
+        $stmt->bind_param("s", $channel->id);
         $stmt->execute();
         $result = $stmt->get_result();
 
-        while ($row = $result->fetch_assoc()) {
-            $thumb_url = "/videos/{$row['video_id']}.jpg";
-            $watch_url = "watch.php?id={$row['video_id']}";
-        ?>
-            <li>
-                <img width="240" height="150" src="<?php echo $thumb_url; ?>">
-                <a href="<?php echo $watch_url; ?>">
-                    <?php echo $row["title"]; ?>
-                </a>
-            </li>
+        while ($video = $result->fetch_object()) {
+            /**
+             * Prefer the locally hosted thumbnail, obtain by extracting the
+             * extension (jpg, webp, etc.) from YouTube's URL using regex
+             */
+            $thumbnail = $video->thumbnail;
+            if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
+                $thumb_ext = $matches[1];
+                $thumbnail = "/videos/$video->channel_id/$video->id.$thumb_ext";
+            } ?>
+            <figure class="video-block">
+                <div class="video-thumbnail">
+                    <img width="240" height="150" alt="" src="<?php echo $thumbnail; ?>">
+                    <span class="video-duration">
+                        <?php echo format_duration($video->duration); ?></span>
+                </div>
+                <figcaption>
+                    <p class="video-title">
+                        <a href="watch.php?id=<?php echo $video->id; ?>">
+                            <?php echo htmlspecialchars($video->title); ?></a>
+                    </p>
+                    <span class="view-count">
+                        <?php echo number_format($video->view_count); ?> views &bull;</span>
+                    <span class="upload-date">
+                        <?php echo date_format(
+                            date_create($video->upload_date),
+                            "M j, Y"
+                        ); ?></span>
+                </figcaption>
+            </figure>
         <?php } ?>
-    </ol>
+    </main>
 </body>
 
 </html>

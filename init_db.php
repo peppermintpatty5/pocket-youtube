@@ -7,19 +7,23 @@ $mysqli = new mysqli($hostname, $username, $password, $database);
 $mysqli->query("DROP TABLE IF EXISTS channel, video");
 $mysqli->query(
     "CREATE TABLE channel(
-        channel_id varchar(24) PRIMARY KEY,
-        uploader varchar(255)
-    ) COLLATE=utf8mb4_0900_bin"
+        channel_id  char(24) PRIMARY KEY,
+        uploader    varchar(255)
+    ) CHARACTER SET ascii, COLLATE ascii_bin"
 );
 $mysqli->query(
     "CREATE TABLE video(
-        video_id varchar(15) PRIMARY KEY,
-        title varchar(255),
-        description text,
-        channel_id varchar(24),
-        ext varchar(7),
+        video_id    char(11) PRIMARY KEY,
+        title       varchar(100) CHARACTER SET utf8mb4,
+        description text CHARACTER SET utf8mb4,
+        upload_date date,
+        channel_id  char(24),
+        duration    int,
+        view_count  int,
+        thumbnail   varchar(255),
+        ext         char(4),
         FOREIGN KEY (channel_id) REFERENCES channel(channel_id)
-    ) COLLATE=utf8mb4_0900_bin"
+    ) CHARACTER SET ascii, COLLATE ascii_bin"
 );
 
 // prepared INSERT statements
@@ -32,37 +36,59 @@ $channel_insert = $mysqli->prepare(
 );
 $video_insert = $mysqli->prepare(
     "INSERT INTO video(
-        video_id, title, description, channel_id, ext
+        video_id,
+        title,
+        description,
+        upload_date,
+        channel_id,
+        duration,
+        view_count,
+        thumbnail,
+        ext
     ) VALUES(
-        ?, ?, ?, ?, ?
+        ?, ?, ?, ?, ?, ?, ?, ?, ?
     )"
 );
 
-$files = scandir("videos");
-foreach ($files as $file) {
-    if (preg_match("/^.*\.info\.json$/", $file)) {
-        $json = file_get_contents("videos/{$file}");
-        $data = json_decode($json, true);
+foreach (scandir("videos") as $a) {
+    if (
+        is_dir("videos/$a") && !is_link("videos/$a")
+        && preg_match("/^[a-zA-Z0-9_\-]{24}$/", $a)
+    ) {
+        $channel_dir = "videos/$a";
 
-        $channel_insert->bind_param(
-            "ss",
-            $data["channel_id"],
-            $data["uploader"]
-        );
-        $video_insert->bind_param(
-            "sssss",
-            $data["id"],
-            $data["title"],
-            $data["description"],
-            $data["channel_id"],
-            $data["ext"]
-        );
+        foreach (scandir($channel_dir) as $b) {
+            $filename = "$channel_dir/$b";
 
-        /**
-         * Must insert into to channel before video to meet foreign key
-         * constraint on video.channel_id
-         */
-        $channel_insert->execute();
-        $video_insert->execute();
+            if (is_file($filename) && preg_match("/^.*\.info\.json$/", $b)) {
+                $json = file_get_contents($filename);
+                $video = json_decode($json);
+
+                $channel_insert->bind_param(
+                    "ss",
+                    $video->channel_id,
+                    $video->uploader
+                );
+                $video_insert->bind_param(
+                    "sssssssss",
+                    $video->id,
+                    $video->title,
+                    $video->description,
+                    $video->upload_date,
+                    $video->channel_id,
+                    $video->duration,
+                    $video->view_count,
+                    $video->thumbnail,
+                    $video->ext
+                );
+
+                /**
+                 * Must insert into to channel before video to meet foreign key
+                 * constraint on video.channel_id
+                 */
+                $channel_insert->execute();
+                $video_insert->execute();
+            }
+        }
     }
 }
