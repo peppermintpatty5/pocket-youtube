@@ -76,7 +76,7 @@ if (!($result && $channel = $result->fetch_object())) {
             $thumbnail = $video->thumbnail;
             if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
                 $thumb_ext = $matches[1];
-                $thumbnail = "/videos/$video->channel_id/$video->id.$thumb_ext";
+                $thumbnail = "videos/$video->channel_id/$video->id.$thumb_ext";
             } ?>
             <figure class="video-block">
                 <div class="video-thumbnail">
