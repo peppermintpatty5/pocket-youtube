@@ -1,5 +1,5 @@
 <?php
-require_once "mysql.php";
+require_once __DIR__ . "/../include/mysql.php";
 
 $mysqli = new mysqli($hostname, $username, $password, $database);
 ?>

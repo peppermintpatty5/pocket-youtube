@@ -1,5 +1,5 @@
 <?php
-require_once "mysql.php";
+require_once __DIR__ . "/../include/mysql.php";
 
 /**
  * Given a duration in seconds as a non-negative integer, outputs a string in
