@@ -77,14 +77,14 @@ Next, create a symbolic link named `videos` to your video library. Please note t
 ln --symbolic /path/to/video/library videos
 ```
 
-Create a file named `mysql.php` which contains your MySQL login credentials and database name.
+Create a file `config.ini` which contains your MySQL credentials.
 
-```php
-<?php
-$hostname = "localhost";
-$username = ...;
-$password = ...;
-$database = "pocket_youtube";
+```ini
+[mysql]
+hostname = "localhost"
+username = "username"
+password = "password"
+database = "pocket_youtube"
 ```
 
 Finally, navigate to [http://localhost/youtube/init_db.php](http://localhost/youtube/init_db.php) to initialize the database. Upon returning to the homepage, you should find it populated with your videos.

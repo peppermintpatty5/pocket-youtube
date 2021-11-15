@@ -1,5 +1,4 @@
-# MySQL login credientials and database name
-mysql.php
+*.ini
 
 # Symbolic link to video library
 videos
