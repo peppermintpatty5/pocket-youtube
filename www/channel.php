@@ -1,9 +1,9 @@
 <?php
-require_once "mysql.php";
+require_once __DIR__ . "/../include/mysql.php";
 
 /**
  * Given a duration in seconds as a non-negative integer, outputs a string in
- * the format `mm:ss` or `h:mm:ss`.
+ * the format `m:ss` or `h:mm:ss`.
  */
 function format_duration(int $duration): string
 {
@@ -76,7 +76,7 @@ if (!($result && $channel = $result->fetch_object())) {
             $thumbnail = $video->thumbnail;
             if (preg_match("/\.([[:alnum:]]+)(\?.*)?$/", $thumbnail, $matches)) {
                 $thumb_ext = $matches[1];
-                $thumbnail = "/videos/$video->channel_id/$video->id.$thumb_ext";
+                $thumbnail = "videos/$video->channel_id/$video->id.$thumb_ext";
             } ?>
             <figure class="video-block">
                 <div class="video-thumbnail">

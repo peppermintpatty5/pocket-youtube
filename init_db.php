@@ -1,5 +1,6 @@
+#!/bin/php
 <?php
-require_once "mysql.php";
+require_once __DIR__ . "/include/mysql.php";
 
 $mysqli = new mysqli($hostname, $username, $password, $database);
 
@@ -50,12 +51,12 @@ $video_insert = $mysqli->prepare(
     )"
 );
 
-foreach (scandir("videos") as $a) {
+foreach (scandir("www/videos") as $a) {
     if (
-        is_dir("videos/$a") && !is_link("videos/$a")
+        is_dir("www/videos/$a") && !is_link("www/videos/$a")
         && preg_match("/^[a-zA-Z0-9_\-]{24}$/", $a)
     ) {
-        $channel_dir = "videos/$a";
+        $channel_dir = "www/videos/$a";
 
         foreach (scandir($channel_dir) as $b) {
             $filename = "$channel_dir/$b";
@@ -88,6 +89,8 @@ foreach (scandir("videos") as $a) {
                  */
                 $channel_insert->execute();
                 $video_insert->execute();
+
+                echo $video->id, PHP_EOL;
             }
         }
     }
