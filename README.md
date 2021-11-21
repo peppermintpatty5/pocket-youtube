@@ -1,8 +1,8 @@
 # pocket-youtube
 
-Simple webpage for hosting video library via HTTP
+A simple website for hosting your archived YouTube videos.
 
-## Installation
+## Prerequisites
 
 You will need the following tools, commonly referred to as LAMP.
 
@@ -15,34 +15,49 @@ You will need the following tools, commonly referred to as LAMP.
 >
 > \- *Obi-Wan Kenobi*
 
-### Apache Configuration
+## Installation
 
-The first step is to host your video library on Apache, which can be configured to permit access to specific directories outside the document root. Add the following to `/etc/apache2/apache2.conf`.
+1. Create a database which will be used to store video metadata. You may choose any name for this.
 
-```apache
-Alias "/videos" "/path/to/video/library"
-<Directory /path/to/video/library>
-    Options +Indexes
-    Require all granted
-</Directory>
-```
+    ```sql
+    CREATE DATABASE `pocket_youtube`;
+    ```
 
-Restart Apache for your changes to take effect. Your videos should then be visible at [http://localhost/videos/](http://localhost/videos/).
+2. Create a file `config.ini` which contains your MySQL credentials.
 
-```sh
-service apache2 restart
-```
+    ```ini
+    [mysql]
+    hostname = "localhost"
+    username = "username"
+    password = "password"
+    database = "pocket_youtube"
+    ```
 
-A similar step follows for hosting the webpages in this repository at [http://localhost/youtube/](http://localhost/youtube/).
+3. Create a symbolic link to your video library.
 
-```apache
-Alias "/youtube" "/path/to/this/repository"
-<Directory /path/to/this/repository>
-    Require all granted
-</Directory>
-```
+    ```sh
+    ln --symbolic /path/to/video/library www/videos
+    ```
 
-### Database Setup
+4. Run the script [`init_db.php`](init_db.php) to initialize the database.
+
+    ```sh
+    php init_db.php
+    ```
+
+5. To quickly check if things are working, you can start PHP's built-in web server on <http://localhost:8000>.
+
+    ```sh
+    php -S localhost:8000 -t www/
+    ```
+
+## Configuring Apache
+
+Configuring the Apache webserver can be a headache. The shell script [`install.sh`](install.sh) is meant for Debian-based systems. On other systems, Apache is called `httpd` and the configuration files are in different locations.
+
+Chances are you cloned this repository into your home directory. If you use `install.sh`, you will need to give global read permission to your home directory. Some will rightfully see this as a security concern. I suggest you avoid using `install.sh` and do your own research.
+
+## Videos Directory
 
 This project requires `videos/` to be in a specific format. All files must be named by their YouTube ID, which guarantees unique and simple filenames. Metadata and thumbnails for each video are also needed.
 
@@ -64,30 +79,6 @@ The following `youtube-dl` options are directly responsible for creating the out
 --write-info-json
 --write-thumbnail
 ```
-
-Now comes the task of storing the metadata for all videos in a database. First, create a MySQL database for the sole use of this project. You may use any name you like.
-
-```sql
-CREATE DATABASE pocket_youtube;
-```
-
-Next, create a symbolic link named `videos` to your video library. Please note that for security reasons, Apache disables following symbolic links by default, which means that [http://localhost/youtube/videos/](http://localhost/youtube/videos/) should **not** be accessible.
-
-```sh
-ln --symbolic /path/to/video/library videos
-```
-
-Create a file `config.ini` which contains your MySQL credentials.
-
-```ini
-[mysql]
-hostname = "localhost"
-username = "username"
-password = "password"
-database = "pocket_youtube"
-```
-
-Finally, navigate to [http://localhost/youtube/init_db.php](http://localhost/youtube/init_db.php) to initialize the database. Upon returning to the homepage, you should find it populated with your videos.
 
 ## Remarks on `youtube-dl`
 
