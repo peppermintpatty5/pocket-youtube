@@ -53,7 +53,7 @@ You will need the following tools, commonly referred to as LAMP.
 
 ## Configuring Apache
 
-Configuring the Apache webserver can be a headache. The shell script [`install.sh`](install.sh) is meant for Debian-based systems. On other systems, Apache is called `httpd` and the configuration files are in different locations.
+Configuring the Apache web server can be a headache. The shell script [`install.sh`](install.sh) is meant for Debian-based systems. On other systems, Apache is called `httpd` and the configuration files are in different locations.
 
 Chances are you cloned this repository into your home directory. If you use `install.sh`, you will need to give global read permission to your home directory. Some will rightfully see this as a security concern. I suggest you avoid using `install.sh` and do your own research.
 
@@ -61,10 +61,10 @@ Chances are you cloned this repository into your home directory. If you use `ins
 
 This project requires `videos/` to be in a specific format. All files must be named by their YouTube ID, which guarantees unique and simple filenames. Metadata and thumbnails for each video are also needed.
 
-Furthermore, `videos/` must be partitioned by channel. These subdirectories must be named using the 24-character YouTube channel ID. The user is encouraged, but not required, to create symbolic links to these directories for easier reference.
+Furthermore, `videos/` must be partitioned by channel. These subdirectories must be named using the 24-character YouTube channel ID. You are encouraged, but not required, to create symbolic links to these directories for easier reference.
 
 ```txt
-videos/
+www/videos
 ├── TheAngryGrandpaShow -> UCPFVhmjjSkFhfstm2LghZIg/
 └── UCPFVhmjjSkFhfstm2LghZIg
     ├── zVQ61CpWBRk.info.json
@@ -72,7 +72,7 @@ videos/
     └── zVQ61CpWBRk.webp
 ```
 
-The following `youtube-dl` options are directly responsible for creating the output as described. See [remarks on `youtube-dl`](#remarks-on-youtube-dl) for more details.
+By using the following `youtube-dl` options, your video library will have the required structure.
 
 ```txt
 --output '%(id)s.%(ext)s'
